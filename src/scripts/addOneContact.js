@@ -1,24 +1,18 @@
-import fs from 'node:fs/promises';
-import { PATH_DB } from '../constants/contacts.js';
 import { createFakeContact } from '../utils/createFakeContact.js';
+import { readContacts } from '../utils/readContacts.js';
+import { writeContacts } from '../utils/writeContacts.js';
 
 const addOneContact = async () => {
   try {
-    const data = await fs.readFile(PATH_DB, 'utf8');
-    const currentContacts = JSON.parse(data) || [];
+    const currentContacts = await readContacts();
 
     const newContact = createFakeContact();
 
-    const updatedContacts = [...currentContacts, newContact];
+    currentContacts.push(newContact);
 
-    await fs.writeFile(
-      PATH_DB,
-      JSON.stringify(updatedContacts, null, 2),
-      'utf8',
-    );
-    console.log('Successfully added a new contact!');
+    await writeContacts(currentContacts);
   } catch (err) {
-    console.error('Error adding contact:', err);
+    console.error(err);
   }
 };
 
